@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menara;
-use App\Http\Requests\StoreMenaraRequest;
-use App\Http\Requests\UpdateMenaraRequest;
-use App\Models\Kecamatan;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use App\Models\Provider;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\biaya;
 use App\Models\Jenis;
+use App\Models\Menara;
+use App\Models\Provider;
+use App\Models\Kecamatan;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreMenaraRequest;
+use App\Http\Requests\UpdateMenaraRequest;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MenaraController extends Controller
 {
@@ -21,13 +25,19 @@ class MenaraController extends Controller
      */
     public function index(request $request)
     {
-        // // $cari = $request->cari;
-        // // $menaras = Menara::where('nama','LIKE','%'.$cari.'%')
-            
-        //      ->get();
+        // $menara = DB::table('menaras')
+        // ->join('providers', 'menaras.provider_id', '=', 'providers.id')
+        // ->join('jenis', 'menaras.jenis_id', '=', 'jenis.id')
+        // ->join('kecamatans', 'menaras.kecamatan_id', '=', 'kecamatans.id')
+        // ->select('menaras.*','providers.name','jenis.nama as jnama','jenis.tarif','kecamatans.nama as knama')
+        // ->get();
+
         return view('provider.menara.index', [
             // 'menaras' => Menara::orderBy('tahun','DESC')->paginate(5)->withQueryString()
-            "menaras" => Menara::orderBy('tahun','DESC')->filter(request(['search']))->paginate(5)->withQueryString()
+            "menaras" => Menara::orderBy('created_at','DESC')->filter(request(['search']))->paginate(7)->withQueryString(),
+            'kecamatans' => Kecamatan::all(),
+            'providers' => Provider::all()
+            // 'menaras' => $menara
             ]);
     }
 
@@ -164,6 +174,7 @@ class MenaraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    
     public function destroy($id)
     {
         if(Menara::findOrFail($id)->foto)
@@ -175,12 +186,202 @@ class MenaraController extends Controller
         return response()->json(['status' => 'Data berhasil Dihapus']);
     }
 
-    public function map()
+    public function map(request $request)
     {
-        return view('peta', [
-            'menaras' => Menara::all(),
-            'kecamatans' => Kecamatan::all()
+        if($request->filled('provider_id')){
+            $menara = DB::table('menaras')
+            ->join('providers','menaras.provider_id','=','providers.id')
+            ->join('kecamatans','menaras.kecamatan_id','=','kecamatans.id')
+            ->select('menaras.*','providers.icon','kecamatans.status','providers.name')
+           
+            ->where('provider_id', $request->provider_id)
+            ->where('kecamatans.status', '0' )
+            ->get(); 
+
+        }else{
+            $menara = DB::table('menaras')
+            ->join('providers','menaras.provider_id','=','providers.id')
+            ->join('kecamatans','menaras.kecamatan_id','=','kecamatans.id')
+            ->select('menaras.*','providers.icon','kecamatans.status','providers.name')
+            ->where('kecamatans.status', '0' )
+            ->get(); 
+        }
+
+      
+
+        
+        $provider = DB::table('providers')
+        ->select('providers.name')
+        ->get();
+
+        $kecamatan = DB::table('kecamatans')
+                ->where('status', '0')
+                ->get(); 
+
+     
+        return view('provider.peta.index', [
+            'menaras' => $menara,
+            'kecamatans' => $kecamatan,
+            'providers' => $provider,
+            'pemilik' => Provider::all()
             ]);
+    }
+
+    public function getMenara($id)
+    {
+        
+        $menara = DB::table('menaras')
+        ->where('provider_id', $id)
+        ->get();
+       return response()->json($menara);
+  
+    }
+
+    public function getLok($id)
+    {
+        $menara = Menara::findOrFail($id);
+
+        dd($menara);
+
+        $provider = DB::table('providers')
+        ->select('providers.name')
+        ->get();
+     
+        return view('provider.peta.index', [
+            'menaras' => Menara::all(),
+            'kecamatans' => Kecamatan::all(),
+            'providers' => $provider,
+            'pemilik' => Provider::all()
+            ]);
+    }
+
+    public function tes()
+    {
+        
+        $provider = DB::table('providers')
+        ->select('providers.name')
+        ->get();
+
+        $menara = DB::table('menaras')
+        ->select('nama','lat','long')
+        ->get();
+
+        $menara = DB::table('menaras')
+        ->join('providers', 'menaras.provider_id', '=', 'providers.id')
+        ->select('menaras.nama','menaras.lat','menaras.long','providers.icon','menaras.id')
+        ->get();
+     
+     
+      
+        return view('test', [
+            'tower' => $menara,
+            'menaras' => Menara::all(),
+            'kecamatans' => Kecamatan::all(),
+            'providers' => $provider
+            ]);
+    }
+
+    public function cetakPdf()
+    {
+        // $menara = Menara::all();
+ 
+    	// $pdf = PDF::loadview('menara_pdf',['menara'=>$menara]);
+    	// return $pdf->download('laporan-menara-pdf');
+        // $data = Menara::all();
+        // // share data to view
+        // view()->share('menara',$data);
+        // $pdf = PDF::loadView('menara_pdf', $data);
+        // // download PDF file with download method
+        // return $pdf->download('pdf_file.pdf');
+
+        $data = Menara::all();
+ 
+        return view('menara_pdf');
+
+    }
+
+    public function Detail($id)
+    {
+        $menara = Menara::findOrFail($id);
+
+        return view('provider.peta.detail', [
+            'menara' => $menara,
+            'providers' => Provider::all(),
+            'kecamatans' => Kecamatan::all(),
+            'jeniss' => Jenis::all()
+        ]);
+    }
+
+    public function Rute(request $request,$id)
+    {
+        if($request->filled('menara_id')){
+            $menara = DB::table('menaras')
+            ->join('providers','menaras.provider_id','=','providers.id')
+            ->join('kecamatans','menaras.kecamatan_id','=','kecamatans.id')
+            ->select('menaras.*','providers.icon','kecamatans.status','providers.name')
+            ->where('menaras.id', $request->menara_id )
+            ->where('kecamatans.status', '0' )
+            ->get(); 
+
+        }else{
+            $menara = DB::table('menaras')
+            ->join('providers','menaras.provider_id','=','providers.id')
+            ->join('kecamatans','menaras.kecamatan_id','=','kecamatans.id')
+            ->select('menaras.*','providers.icon','kecamatans.status','providers.name')
+            ->where('menaras.id', $id )
+            ->where('kecamatans.status', '0' )
+            ->get(); 
+        }
+        $provider = DB::table('providers')
+        ->select('providers.name')
+        ->get();
+
+        $kecamatan = DB::table('kecamatans')
+                ->where('status', '0')
+                ->get(); 
+
+     
+        return view('provider.peta.rute', [
+            'menaras' => $menara,
+            'kecamatans' => $kecamatan,
+            'providers' => $provider,
+            'pemilik' => Provider::all()
+            ]);
+    }
+
+    public function menaraCetak()
+    {
+        
+        $pemilik = Provider::findOrFail(request('provider_id'));
+       
+
+        $id = DB::table('menaras')
+        ->join('providers', 'menaras.provider_id', '=', 'providers.id')
+        ->join('jenis', 'menaras.jenis_id', '=', 'jenis.id')
+        ->join('kecamatans', 'menaras.kecamatan_id', '=', 'kecamatans.id')
+        ->select('menaras.*','providers.name','jenis.nama as jnama','jenis.tarif','kecamatans.nama as knama')
+       
+        ->Where('provider_id',request('provider_id'))
+        ->OrWhere('kecamatan_id',request('kecamatan_id'))
+        ->get(); 
+
+        // $id = DB::table('menaras')
+        // ->join('providers', 'menaras.provider_id', '=', 'providers.id')
+        // ->join('jenis', 'menaras.jenis_id', '=', 'jenis.id')
+        // ->join('kecamatans', 'menaras.kecamatan_id', '=', 'kecamatans.id')
+        // ->select('menaras.*','providers.name','jenis.nama as jnama','jenis.tarif','kecamatans.nama as knama')
+        // ->get();
+
+        $tanggal = Carbon::now()->locale('id_ID')->isoFormat('LLLL');
+        $tahun = Carbon::now()->locale('id_ID')->Format('dmy');
+      
+        return view('provider.menara.cetak', [
+           
+            'sekarang' => $tanggal,
+            'menara' => $id,
+            'pemilik' => $pemilik,
+            'tahun' => $tahun
+        ]);
     }
 
 }

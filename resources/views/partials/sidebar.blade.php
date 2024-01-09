@@ -1,13 +1,12 @@
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="index.html" class="app-brand-link">
+      <a href="#" class="app-brand-link">
         <span class="app-brand-logo demo">
              <img src="{{ asset('logo.png') }}" alt="" width="30">
             </span>
         <span class="app-brand-text demo menu-text fw-bolder ms-2" style="text-transform: capitalize;">Diskominfo</span>
       </a>
-
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
         <i class="bx bx-chevron-left bx-sm align-middle"></i>
       </a>
@@ -95,21 +94,21 @@
       <!-- Components -->
       <li class="menu-header small text-uppercase"><span class="menu-header-text">Output</span></li>
       <!-- Cards -->
-      <li class="menu-item">
-        <a href="cards-basic.html" class="menu-link">
+      <li class="menu-item {{ Request::is('pesan*') ? 'active' : '' }}">
+        <a href="/pesan"  class="menu-link">
           <i class="menu-icon tf-icons bx bx-collection"></i>
           <div data-i18n="Basic">Pesan</div>
         </a>
       </li>
       <!-- User interface -->
-      <li class="menu-item">
+      <li class="menu-item {{ Request::is('laporan*') ? 'active' : '' }}">
         <a href="javascript:void(0)" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons bx bx-box"></i>
           <div data-i18n="User interface">Laporan</div>
         </a>
         <ul class="menu-sub">
-          <li class="menu-item">
-            <a href="ui-accordion.html" class="menu-link">
+          <li class="menu-item {{ Request::is('laporan*') ? 'active' : '' }}">
+            <a href="/laporan" class="menu-link">
               <div data-i18n="Accordion">Retribusi</div>
             </a>
           </li>

@@ -26,7 +26,7 @@
                                 <span id="basic-icon-default-fullname2" class="input-group-text"
                                 ><i class="bx bx-image-alt"></i
                               ></span>
-                                <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto" 
+                                <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto" autofocus 
                                  accept="image/png,image/jpg,image/jpeg" onchange="previewImage()">                    
                                 @error('foto')
                               <div class="invalid-feedback">
@@ -133,7 +133,7 @@
                                 placeholder="Tinggi"
                                 aria-label="Tinggi"
                                 aria-describedby="basic-icon-default-fullname2"
-                                min="20" max="100"
+                                min="3" max="120"
                                 value="{{ old('tinggi') }}"
                               />
                               <span class="input-group-text">Meter</span>
@@ -147,7 +147,7 @@
                           </div>
                           <div class="col-6 mb-3">
                             <label for="provider" class="form-label">Jenis Menara</label>
-                            <select class="form-control @error('jenis') is-invalid @enderror" name="jenis_id">
+                            <select class="form-control @error('jenis_id') is-invalid @enderror" name="jenis_id">
                                 <option value="">== Pilih Jenis Menara ==</option>
                               @foreach ($jeniss as $jenis)
                               @if (old('jenis_id') == $jenis->id)
@@ -182,6 +182,12 @@
                             </div>
                             @enderror
                           </div>
+
+                          <div class="mb-3">
+                          <button class="btn btn-primary btn-block" type="button" onclick="getlokasi()" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="right" data-bs-html="true" title="" data-bs-original-title=" <span>Ketuk Untuk Mendatkan Koordinat Lokasi Saat Ini</span>">Dapatkan lokasi</button>
+                          </div>
+                          
+
                           <div class="col-6 mb-3">
                             <label class="form-label" for="basic-icon-default-fullname">Latitude</label>
                             <div class="input-group input-group-merge">
@@ -284,7 +290,11 @@
                 var latInput = document.querySelector("[name=lat]");
                 var lngInput = document.querySelector("[name=long]");
 
-                
+        //         if (navigator.geolocation) {
+        //     // getCurrentPosition digunakan untuk mendapatkan lokasi pengguna
+        //     //showPosition adalah fungsi yang akan dijalankan
+        //     navigator.geolocation.getCurrentPosition(showPosition);    
+        // }
 
                 var curLocation = [-1.5016624,102.1162189];
 
@@ -343,27 +353,69 @@
           @endforeach
               
 
-                var Icon = L.icon({
+            //     var Icon = L.icon({
+            //     iconUrl: '/storage/pin.gif',
+            //     iconSize:     [50, 70], // size of the icon
+            //     shadowSize:   [50, 64], // size of the shadow
+            //     iconAnchor:   [22, 50], // point of the icon which will correspond to marker's location
+            //     popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            // });
+                
+            //     map.locate({setView: true, maxZoom: 8});
+            // function onLocationFound(e) {
+            //   var radius = e.accuracy;
+            //   var position = marker.getLatLng();
+            //         L.marker(e.latlng, {icon: Icon}).addTo(map).bindPopup("<b>Hai!</b><br />Ini adalah lokasi mu");
+                  
+            // //   document.getElementById('#lat').value = position.lat
+            // // document.getElementById('#long').value = position.lng
+            // }
+           
+            // map.on('locationfound', onLocationFound);
+            
+    var lok = document.getElementById("lokasi");
+    
+    function getlokasi() {
+        //jika browser mendukung navigator.geolocation maka akan menjalankan perintah di bawahnya
+        if (navigator.geolocation) {
+            // getCurrentPosition digunakan untuk mendapatkan lokasi pengguna
+            //showPosition adalah fungsi yang akan dijalankan
+            navigator.geolocation.getCurrentPosition(showPosition);    
+        }else {
+            alert('Your device is not support!');
+            }
+    }
+    
+    function showPosition(posisi){
+
+     
+
+      var Icon = L.icon({
                 iconUrl: '/storage/pin.gif',
                 iconSize:     [50, 70], // size of the icon
                 shadowSize:   [50, 64], // size of the shadow
                 iconAnchor:   [22, 50], // point of the icon which will correspond to marker's location
                 popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
             });
-                
-                map.locate({setView: true, maxZoom: 8});
+            
+      map.locate({setView: true, maxZoom: 8});
             function onLocationFound(e) {
               var radius = e.accuracy;
               var position = marker.getLatLng();
                     L.marker(e.latlng, {icon: Icon}).addTo(map).bindPopup("<b>Hai!</b><br />Ini adalah lokasi mu");
-             
-              document.getElementById('lat').value = position.lat
-            document.getElementById('long').value = position.lng
+                  
+   
+            //   document.getElementById('#lat').value = position.lat
+            // document.getElementById('#long').value = position.lng
             }
-           
-            map.on('locationfound', onLocationFound);
-       
+            
+        // tampilkan kordinat di dalam elemen lokasi
+        $("#lat").val(posisi.coords.latitude);
+        $("#long").val(posisi.coords.longitude);
 
+        map.on('locationfound', onLocationFound);
+       
+    }
                 
 
                 //  const map = L.map('map').setView([-1.5016624,102.1162189], 12);

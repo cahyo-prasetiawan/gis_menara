@@ -21,7 +21,7 @@
                 </a>
               </div>
               <!-- /Logo -->
-              <h4 class="mb-2">Welcome to E-Menara! 👋</h4>
+              <h4 class="mb-2">Welcome to E-Menara!</h4>
               <p class="mb-4">Silakan Masuk Ke Akun Anda Dan Mulai Menggunakan Sistem</p>
 
               <form id="formAuthentication" class="mb-3" action="/" method="POST">

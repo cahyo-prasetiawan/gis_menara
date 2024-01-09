@@ -87,6 +87,9 @@
          </tr>
        </tbody>
      </table>
+     <div class="container mt-2">
+      {{ $providers->links('pagination::bootstrap-5') }}
+    </div>
    </div>
  </div>
 </div>

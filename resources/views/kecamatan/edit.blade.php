@@ -94,6 +94,30 @@
                             @enderror
                             </div>
                           </div>
+
+                          <div class="mb-3">
+                            <label for="provider" class="form-label">Status</label>
+                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" >
+                              @if (old('status', $kecamatan->status)  == $kecamatan->status)
+                              <option value="{{ $kecamatan->status }}" selected> @if( $kecamatan->status == '0') Aktif @else Tidak Aktif @endif</option>
+                                  @if($kecamatan->status == '0')
+                                  <option value="1"  {{ ($kecamatan->status == "0")? "checked" : "" }}>Tidak Aktif</option>
+                                  @else
+                                  <option value="0"  {{ ($kecamatan->status == "1")? "checked" : "" }}>Aktif</option>
+                                  @endif
+                              @else
+                             
+                              @endif
+                            </select>
+                            @error('status')
+                            <div class="invalid-feedback">
+                            {{ $message }}
+                            </div>
+                            @enderror
+                          </div>
+                         
+                         
+
                           <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </form>
                       </div>

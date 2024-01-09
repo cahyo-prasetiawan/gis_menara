@@ -147,7 +147,7 @@
                                 placeholder="Tinggi"
                                 aria-label="Tinggi"
                                 aria-describedby="basic-icon-default-fullname2"
-                                min="20" max="100"
+                                min="3" max="120"
                                 value="{{ old('tinggi', $menara->tinggi) }}"
                               />
                               <span class="input-group-text">Meter</span>

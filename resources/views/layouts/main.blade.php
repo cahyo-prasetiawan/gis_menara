@@ -43,6 +43,10 @@
     <link rel="stylesheet" href="{{ asset('../assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('../assets/css/demo.css') }}" />
 
+    <!-- css leaflet control -->
+
+   
+
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
@@ -51,6 +55,7 @@
 
    <!-- script chart -->
    <script src="{{ asset('..\assets\js\highchart.js') }}"></script>
+
 
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('../assets/vendor/css/pages/page-auth.css') }}" />
@@ -61,21 +66,52 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('../assets/js/config.js') }}"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-    crossorigin=""></script>
+    <link rel="stylesheet" href="{{ asset('../assets/css/loading.css') }}" />
+    <link rel="stylesheet" href="{{ asset('../assets/css/chat.css') }}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+   
+
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
     <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="{{ asset('../dist/MarkerCluster.css') }}" />
+    <link rel="stylesheet" href="{{ asset('../dist/MarkerCluster.Default.css') }}" />
+<style>
+  .layout-navbar .navbar-dropdown .dropdown-menu{
+    min-width:22rem;
+  }
+
+  .badge.badge-notifications {
+    position: absolute; 
+    top: auto;
+    display: inline-block;
+    margin: 0;
+    transform: translate(-50%, -30%);
+  }
+ 
+</style>
+
   </head>
 
-  <body>
+  <body onload="loader()">
+
+    <div id="loading">
+      <span class="loader"></span>
+      <div class="textLoader">
+          <center>
+          <b>Tolong Tunggu ... </b>
+          </center>
+      </div>
+  </div>
+
     <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container">
         @include('partials.sidebar')
@@ -91,7 +127,7 @@
               <script>
                 document.write(new Date().getFullYear());
               </script>
-            
+          
             </div>
           </div>
         </footer>
@@ -129,6 +165,15 @@
         title: flash
       })
     }
+
+   
+
+    function loader() {
+                setTimeout(function(){
+                    $("#loading").hide();
+                    $(".loader").hide();
+                },100);
+            };
     </script>
 
     <script src="{{ asset('../assets/vendor/libs/jquery/jquery.js') }}"></script>
@@ -144,7 +189,9 @@
 
     <!-- Main JS -->
     <script src="{{ asset('../assets/js/main.js') }}"></script>
-
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Page JS -->
     <script src="{{ asset('../assets/js/dashboards-analytics.js') }}"></script>
 

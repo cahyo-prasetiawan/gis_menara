@@ -16,6 +16,8 @@ class Jenis extends Model
         return $this->hasMany(Menara::class);
     }
 
+ 
+
 
     public function getRouteKeyName()
     {

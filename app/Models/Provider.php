@@ -21,6 +21,11 @@ class Provider extends Model
         return $this->hasMany(retribusi::class);
     }
 
+    public function pesan()
+    {
+        return $this->hasMany(Pesan::class);
+    }
+
     public function getRouteKeyName()
     {
         return 'name';

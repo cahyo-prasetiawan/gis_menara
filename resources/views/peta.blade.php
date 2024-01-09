@@ -1,170 +1,84 @@
-@extends('layouts.main')
-@section('content')
-<style>
-  #map { height: 90%; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<base target="_top">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>Layers Control Tutorial - Leaflet</title>
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
- </style> 
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-      {{ Breadcrumbs::render('peta') }}
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		.leaflet-container {
+			height: 400px;
+			width: 600px;
+			max-width: 100%;
+			max-height: 100%;
+		}
+	</style>
 
-                <div class="col-lg-12 mb-4 order-0">
-                    <div class="col-xl ">
-                    <div class="" id="map"></div>
-                    </div>
-                  </div>
-              </div>
-              <!-- / Content -->
-              
-            </div>
-            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>       
-            <script>
-            
-              //menampilkan map
-              const map = L.map('map').setView(
-                    [-1.5016624,102.1162189],
-                    10
-                );
-                      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                   maxZoom: 24,
-                                   attribution: '© OpenStreetMap'
-                                 }).addTo(map);
+	
+</head>
+<body>
 
+<div id='map'></div>
 
-                var curLocation = [-1.5016624,102.1162189];
+<script>
+	const cities = L.layerGroup();
 
-            
-                var marker = new L.marker(curLocation, {
-                    draggable: 'true'
-                }).bindPopup("<b>Geser untuk mendapatkan Koordinat");
+	const mLittleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities);
+	const mDenver = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.').addTo(cities);
+	const mAurora = L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.').addTo(cities);
+	const mGolden = L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.').addTo(cities);
 
-                    @foreach($menaras as $menara)
-                    var towerIcon{{ $menara->id }} = L.icon({
-                        iconUrl: '{{ asset('/storage/'.$menara->provider->icon) }}',
-                        iconSize:     [30, 40], // size of the icon
-                    });
-                    L.marker([{{ $menara->lat }},{{ $menara->long }}], {icon: towerIcon{{ $menara->id }}}).addTo(map)
-                    .bindPopup("<img class='img-thumbnail' src='{{ asset('storage/'.$menara->foto) }}'><br><b>Lolasi Menara Ini</b><br>{{ $menara->alamat }}<br><a class='btn btn-success mb-1 p-1'>Detail</a>");
-                    @endforeach
-
-                    var geojson_id = '';
-
-                    @foreach($kecamatans as $kecamatan)
-                    // proses baca file json yang ada di path /asssets/files/
-                    // sesuaikan path ini dengan lokasi tempat kalian menyimpan file data geojson
-                    $.getJSON("{{ asset('storage/'.$kecamatan->geojson) }}", function(data){
-                        //deklarasi variable map dengan fungsi L.map
-                        geojson_id = data;//variabel yang isinya data geojson
-                        
-                         //style untuk geojson, silahkan ubah sesuai kebutuhan
-                function style(feature) {
-                    return {
-                        fillColor: '{{ $kecamatan->warna }}',
-                        weight: 2,
-                        opacity: 1,
-                        color: '{{ $kecamatan->warna }}',
-                        dashArray: '3',
-                        fillOpacity: 0.4
-                    };
-                }
+	const mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+	const mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
  
-                //fungsi untuk menggunakan geojson
-                L.geoJSON(geojson_id, {
-                    style: style
-                }).addTo(map).bindTooltip('{{ $kecamatan->nama }}');
-                   
- 
-            }).fail(function(){
-                console.log("An error has occurred.");
-            });
-            @endforeach
+	const streets =  L.tileLayer('http://{s}.google.com/vt?lyrs=s&x={x}&y={y}&z={z}',{
+                    maxZoom: 20,
+                    subdomains:['mt0','mt1','mt2','mt3']
+                })
 
-                var Icon = L.icon({
-                iconUrl: '/storage/pin.gif',
-                iconSize:     [50, 70], // size of the icon
-                shadowSize:   [50, 64], // size of the shadow
-                iconAnchor:   [22, 50], // point of the icon which will correspond to marker's location
-                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-            });
-                
-                map.locate({setView: true, maxZoom: 8});
-            function onLocationFound(e) {
-              var radius = e.accuracy;
-              var position = marker.getLatLng();
-                    L.marker(e.latlng, {icon: Icon}).addTo(map).bindPopup("<b>Hai!</b><br />Ini adalah lokasi mu");
-            }
-           
-            map.on('locationfound', onLocationFound);
-    
+	const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	});
 
-       
-        
-    </script>
-           @endsection
+	const map = L.map('map', {
+		center: [39.73, -104.99],
+		zoom: 10,
+		layers: [osm, cities]
+	});
+
+	const baseLayers = {
+		'OpenStreetMap': osm,
+		'Streets': streets
+	};
+
+	const overlays = {
+		'Cities': cities
+	};
+
+	const layerControl = L.control.layers(baseLayers, overlays).addTo(map);
+	const crownHill = L.marker([39.75, -105.09]).bindPopup('This is Crown Hill Park.');
+	const rubyHill = L.marker([39.68, -105.00]).bindPopup('This is Ruby Hill Park.');
+
+	const parks = L.layerGroup([crownHill, rubyHill]);
+
+	const satellite = L.tileLayer(mbUrl, {id: 'mapbox/satellite-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+	layerControl.addBaseLayer(satellite, 'Satellite');
+	layerControl.addOverlay(parks, 'Parks');
+</script>
 
 
-//       {{-- function getLocation() {
-//         if (navigator.geolocation) {
-//             navigator.geolocation.getCurrentPosition(showPosition, showError);
-//         } else {
 
-//             alert('Your device is not support!');
-//         }
-//     }
-
-//       function showPosition(data) {
-//             document.getElementById('lat').value = data.coords.latitude
-//             document.getElementById('long').value = data.coords.longitude
-//         }
-
-//         function showError(error) {
-
-// let error_message = ''
-
-// switch (error.code) {
-// case error.PERMISSION_DENIED:
-//     error_message = "User denied the request for Geolocation."
-//     break;
-// case error.POSITION_UNAVAILABLE:
-//     error_message = "Location information is unavailable."
-//     break;
-// case error.TIMEOUT:
-//     error_message = "The request to get user location timed out."
-//     break;
-// case error.UNKNOWN_ERROR:
-//     error_message = "An unknown error occurred."
-//     break;
-// }
-
-// alert(error_message)
-// }
-
-//         var mymap = ''
-//     function showMap(latitude, longitude) {
-
-//         //remove map and render the new map
-
-//         //make map area
-//         mymap = L.map("map").setView(
-//             [latitude, longitude],
-//             13
-//         );
-
-//         //setting maps using api mapbox not google maps, register and get tokens
-//         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//             maxZoom: 19,
-//             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-//             }).addTo(map);
-
-//          //add marker position with variabel latitude and longitude
-//          L.marker([
-//             latitude, longitude
-//         ])
-//             .addTo(mymap)
-//             .bindPopup("Location");
-//     }
-
-//     getLocation() --}}
+</body>
+</html>

@@ -12,72 +12,102 @@ id="layout-navbar"
   <!-- Search -->
   <div class="navbar-nav align-items-center">
     <div class="nav-item d-flex align-items-center">
-      <i class="bx bx-search fs-4 lh-0"></i>
-      <input
-        type="text"
-        class="form-control border-0 shadow-none"
-        placeholder="Search..."
-        aria-label="Search..."
-      />
+     
     </div>
   </div>
   <!-- /Search -->
 
   <ul class="navbar-nav flex-row align-items-center ms-auto">
     <!-- Place this tag where you want the button to render. -->
-    <li class="nav-item navbar-dropdown dropdown-user dropdown">
-        <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-            <button class="rounded-pill btn-icon btn-warning position-relative"> <i class="bx bx-bell  "><span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"></i>
-            </button>
+    <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
+      <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <i class="bx bx-bell bx-sm"></i>
+        @if( auth()->user()->unreadNotifications->count() > 0)
+        <span class="badge bg-danger rounded-pill badge-notifications">{{ auth()->user()->unreadNotifications->count() }}</span>
+        @else
+        @endif
       </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li>
-            <a class="dropdown-item" href="#">
-              <div class="d-flex">
-                <div class="flex-shrink-0 me-3">
-                  <div class="avatar avatar-online">
-                    <img src="{{ asset('../assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
-                  </div>
-                </div>
-                <div class="flex-grow-1">
-                  <span class="fw-semibold d-block">John Doe</span>
-                  <small class="text-muted">Admin</small>
-                </div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <div class="dropdown-divider"></div>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">
-              <i class="bx bx-user me-2"></i>
-              <span class="align-middle">My Profile</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">
-              <i class="bx bx-cog me-2"></i>
-              <span class="align-middle">Settings</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#">
-              <span class="d-flex align-items-center align-middle">
-                <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
-                <span class="flex-grow-1 align-middle">Billing</span>
-                <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-              </span>
-            </a>
-          </li>
-          <li>
-            <div class="dropdown-divider"></div>
-          </li>
-          
-        </ul>
-      </li>
+      <ul class="dropdown-menu dropdown-menu-end py-0">
+        <li class="dropdown-menu-header border-bottom">
+          <div class="dropdown-header d-flex align-items-center py-3">
+            <h5 class="text-body mb-0 me-auto">Notification</h5>
+            @if(auth()->user()->unreadNotifications->count() > 0)
+            <a href="/readAll" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+            @else
 
-    <!-- User -->
+            @endif
+          </div>
+        </li>
+        @if(Auth::user()->role == '0')
+        @foreach(auth()->user()->unreadNotifications as $notification)
+        <li class="dropdown-notifications-list scrollable-container ps">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-action dropdown-notifications-item">
+              <a href="{{ url($notification->data['url']. '?id='. $notification->id ) }}">
+              <div class="d-flex">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">{{ $notification->data['title'] }}</h6>
+                  <p class="mb-0">{{ ucwords($notification->data['message']) }}</p>
+                  <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                </div>
+                <div class="flex-shrink-0 dropdown-notifications-actions">
+                  {{-- "/read/{{ $notification->id }} --}}
+                  <a href="" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                  <a href="" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                </div>
+
+              </div>
+              </a>
+            </li>
+          
+          </ul>
+        <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div>
+        <div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div></li>
+        @endforeach
+        @else
+          @foreach(auth()->user()->unreadNotifications as $notification)
+        <li class="dropdown-notifications-list scrollable-container ps">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-action dropdown-notifications-item">
+              <a href="/read/{{ $notification->id }}">
+              <div class="d-flex">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">{{ $notification->data['title'] }}</h6>
+                  <p class="mb-0">{{ ucwords($notification->data['message']) }}</p>
+                  <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                </div>
+                <div class="flex-shrink-0 dropdown-notifications-actions">
+                  {{-- "/read/{{ $notification->id }} --}}
+                  <a href="" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                  <a href="" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                </div>
+
+              </div>
+              </a>
+            </li>
+          </ul>
+        <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div>
+        <div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div></li>
+        @endforeach
+        @endif
+        @if(auth()->user()->unreadNotifications->count() > 0)
+        <li class="dropdown-menu-footer border-top">
+          <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+            View all notifications
+          </a>
+        </li>
+        @else
+        <li class="dropdown-menu-footer border-top">
+          <a href="javascript:void(0);" class="dropdown-item d-flex justify-content-center p-3">
+            Tidak Ada Notifikasi
+          </a>
+        </li>
+        @endif
+      </ul>
+    </li>
+
+   
+    
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
@@ -128,33 +158,19 @@ id="layout-navbar"
             <span class="align-middle">My Profile</span>
           </a>
         </li>
-        <li>
-          <a class="dropdown-item" href="#">
-            <i class="bx bx-cog me-2"></i>
-            <span class="align-middle">Settings</span>
-          </a>
-        </li>
-        <li>
-          <a class="dropdown-item" href="#">
-            <span class="d-flex align-items-center align-middle">
-              <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
-              <span class="flex-grow-1 align-middle">Billing</span>
-              <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-            </span>
-          </a>
-        </li>
+       
+        
         <li>
           <div class="dropdown-divider"></div>
         </li>
         <li>
           <form action="/logout" method="POST">
             @csrf
-          <button class="dropdown-item" type="submit"> <i class="bx bx-power-off me-2"></i> <span class="align-middle">Log Out</span></button>
+          <button class="dropdown-item" type="submit"> <i class="bx bx-power-off me-2"></i> <span class="align-middle">Keluar</span></button>
           </form>
         </li>
       </ul>
-    </li>
-    <!--/ User -->
+    </li> 
   </ul>
 </div>
 </nav>

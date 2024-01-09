@@ -329,99 +329,92 @@ https://templatemo.com/tm-580-woox-travel
       bannerTimer = setInterval(bannerSwitcher, 5000)
     });
 
-  //hybrid : s,h
-  //satelite : s
-  //street : m
-  //terain : p
-  
-//    var map = L.map('map').setView([-1.5016624,102.1162189], 13);
-//       L.tileLayer('http://{s}.google.com/vt?lyrs=s&x={x}&y={y}&z={z}',{
-//       maxZoom: 19,
-//       subdomains:['mt0','mt1','mt2','mt3']
-//   }).addTo(map);
-  
-  
-//   // var towerIcon = L.icon({
-//   //     iconUrl: 'tower.png',
-//   //     iconSize:     [20, 40], // size of the icon
-//   //     shadowSize:   [50, 64], // size of the shadow
-//   //     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-//   //     shadowAnchor: [4, 62],  // the same for the shadow
-//   //     popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-//   // });
-  
-//   L.marker([-1.5016624,102.1162189]).addTo(map);
-
-//  map.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-// circle.bindPopup("I am a circle.");
-// polygon.bindPopup("I am a polygon.")
-
-// const popup = L.popup()
-// 		.setLatLng([-1.5016624,102.1162189])
-// 		.setContent('I am a standalone popup.')
-// 		.openOn(map);
-
-// 	function onMapClick(e) {
-// 		popup
-// 			.setLatLng(e.latlng)
-// 			.setContent(`You clicked the map at ${e.latlng.toString()}`)
-// 			.openOn(map);
-// 	}
-
-// 	map.on('click', onMapClick);
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>       
+            <script>
+            
+              //menampilkan map
+              const map = L.map('map').setView(
+                    [-1.5016624,102.1162189],
+                    10
+                );
+                      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                   maxZoom: 24,
+                                   attribution: '© OpenStreetMap'
+                                 }).addTo(map);
 
 
-const map = L.map('map').setView([-1.5016624,102.1162189], 15);
+                var curLocation = [-1.5016624,102.1162189];
 
-const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+            
+                var marker = new L.marker(curLocation, {
+                    draggable: 'true'
+                }).bindPopup("<b>Geser untuk mendapatkan Koordinat");
 
-var towerIcon = L.icon({
-      iconUrl: '/storage/post-icons/U7fTbhU28w5xrvyytesGhrsUIjS2OQxsYTm2Z4ac.png',
-      iconSize:     [40, 60], // size of the icon
-      shadowSize:   [50, 64], // size of the shadow
-      iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-      shadowAnchor: [4, 62],  // the same for the shadow
-      popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-  });
+                    @foreach($menaras as $menara)
+                    var towerIcon{{ $menara->id }} = L.icon({
+                        iconUrl: '{{ asset('/storage/'.$menara->provider->icon) }}',
+                        iconSize:     [30, 40], // size of the icon
+                    });
+                    L.marker([{{ $menara->lat }},{{ $menara->long }}], {icon: towerIcon{{ $menara->id }}}).addTo(map)
+                    .bindPopup("<img class='img-thumbnail' src='{{ asset('storage/'.$menara->foto) }}'><br><b>Lolasi Menara Ini</b><br>{{ $menara->alamat }}<br><a class='btn btn-success mb-1 p-1'>Detail</a>");
+                    @endforeach
 
-const marker = L.marker([-1.5014000,102.1162189], {icon: towerIcon}).addTo(map)
-  .bindPopup('<b>Hello world!</b><br />I am a popup.').openPopup();
+                    var geojson_id = '';
 
-const circle = L.circle([-1.5016624,102.1162189], {
-  color: 'red',
-  fillColor: '#f03',
-  fillOpacity: 0.5,
-  radius: 500
-}).addTo(map).bindPopup('I am a circle.');
+                    @foreach($kecamatans as $kecamatan)
+                    // proses baca file json yang ada di path /asssets/files/
+                    // sesuaikan path ini dengan lokasi tempat kalian menyimpan file data geojson
+                    $.getJSON("{{ asset('storage/'.$kecamatan->geojson) }}", function(data){
+                        //deklarasi variable map dengan fungsi L.map
+                        geojson_id = data;//variabel yang isinya data geojson
+                        
+                         //style untuk geojson, silahkan ubah sesuai kebutuhan
+                function style(feature) {
+                    return {
+                        fillColor: '{{ $kecamatan->warna }}',
+                        weight: 2,
+                        opacity: 1,
+                        color: '{{ $kecamatan->warna }}',
+                        dashArray: '3',
+                        fillOpacity: 0.4
+                    };
+                }
+ 
+                //fungsi untuk menggunakan geojson
+                L.geoJSON(geojson_id, {
+                    style: style
+                }).addTo(map).bindTooltip('{{ $kecamatan->nama }}');
+                   
+ 
+            }).fail(function(){
+                console.log("An error has occurred.");
+            });
+            @endforeach
 
-const polygon = L.polygon([
-  [-1.489297, 102.122769],
-  [-1.497627, 102.091227],
-  [-1.505184, 102.098007]
-]).addTo(map).bindPopup('I am a polygon.');
+                var Icon = L.icon({
+                iconUrl: '/storage/pin.gif',
+                iconSize:     [50, 70], // size of the icon
+                shadowSize:   [50, 64], // size of the shadow
+                iconAnchor:   [22, 50], // point of the icon which will correspond to marker's location
+                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            });
+                
+                map.locate({setView: true, maxZoom: 8});
+            function onLocationFound(e) {
+              var radius = e.accuracy;
+              var position = marker.getLatLng();
+                    L.marker(e.latlng, {icon: Icon}).addTo(map).bindPopup("<b>Hai!</b><br />Ini adalah lokasi mu");
+            }
+           
+            map.on('locationfound', onLocationFound);
+    
 
-
-
-const popup = L.popup()
-  .setLatLng([-1.485078, 102.102814])
-  .setContent('I am a standalone popup.')
-  .openOn(map);
-
-function onMapClick(e) {
-  popup
-    .setLatLng(e.latlng)
-    .setContent(`You clicked the map at ${e.latlng.toString()}`)
-    .openOn(map);
-}
-
-map.on('click', onMapClick);
-
-
-  
-  </script>
+       
+        
+    </script>
 
   </body>
 

@@ -8,18 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class retribusi extends Model
 {
     use HasFactory;
-
     protected $guarded = ['id'];
+    protected $dates = ['jatuh_tempo'];
 
     public function provider()
     {
         return $this->belongsTo(Provider::class);
     }
 
+
     public function getRouteKeyName()
     {
         return 'tagihan';
     }
+
+
 
     
     // public function scopeFilter($query, array $filters)

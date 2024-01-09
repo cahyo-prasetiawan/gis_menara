@@ -25,11 +25,10 @@
                           @endif
                           ! 🎉</h5>
                         <p class="mb-4">
-                          You have done <span class="fw-bold">72%</span> more sales today. Check your new badge in
-                          your profile.
+                          Anda Memiliki <span class="fw-bold">{{ auth()->user()->unreadNotifications->count() }}</span> Notifikasi Hari Ini. Cek Notifikasi Dilonceng Atau Ke Profil Anda.
                         </p>
 
-                        <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
+                        <a href="/myprofile" class="btn btn-sm btn-outline-primary">Profil Saya</a>
                       </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
@@ -69,7 +68,6 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt3">
                               <a class="dropdown-item" href="/menara">Lihat Detail</a>
-                              <a class="dropdown-item" href="javascript:void(0);">Delete</a>
                             </div>
                           </div>
                         </div>
@@ -102,14 +100,23 @@
                               <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt6">
-                              <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                              <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                              <a class="dropdown-item" href="/laporan">Lihat Detail</a>
                             </div>
                           </div>
                         </div>
-                        <span>Sales</span>
-                        <h3 class="card-title text-nowrap mb-1">${{ $retribusi }}</h3>
-                        <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
+                        <?php
+                        function rupiah($angka)
+                    {
+                        // $prefix = $prefix ? $prefix : 'Rp. ';
+                        // $nominal = $this->attributes[$field];
+                        // return $prefix . number_format($nominal, 0, ',', '.');
+                        $hasil = "Rp. " . number_format($angka, '2', ',' , '.');
+                        return $hasil;
+                    }
+                    ?>
+                        <span>Jumlah Tagihan</span>
+                        <h6 class="card-title text-nowrap mb-1">{{ rupiah($retribusi) }}</h6>
+                        {{-- <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +28.42%</small> --}}
                       </div>
                     </div>
                   </div>
@@ -131,26 +138,12 @@
                         <div class="card-body">
                           <div class="text-center">
                             <div class="dropdown">
-                              <button
-                                class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                type="button"
-                                id="growthReportId"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false"
-                              >
-                                2022
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
-                              </div>
+                            
                             </div>
                           </div>
                         </div>
                         <div id="Chart"></div>
-                        <div class="text-center fw-semibold pt-3 mb-2">62% Company Growth</div>
+                        {{-- <div class="text-center fw-semibold pt-3 mb-2">75% Company Growth</div> --}}
   
                         <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
                           <div class="d-flex">
@@ -158,8 +151,8 @@
                               <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
                             </div>
                             <div class="d-flex flex-column">
-                              <small>2022</small>
-                              <h6 class="mb-0">$32.5k</h6>
+                              <small>2023</small>
+                              <h6 class="mb-0"> {{ json_encode( rupiah($total[2])) }}</h6>
                             </div>
                           </div>
                           <div class="d-flex">
@@ -167,8 +160,8 @@
                               <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
                             </div>
                             <div class="d-flex flex-column">
-                              <small>2021</small>
-                              <h6 class="mb-0">$41.2k</h6>
+                              <small>2022</small>
+                              <h6 class="mb-0"> {{ json_encode( rupiah($total[1])) }}</h6>
                             </div>
                           </div>
                         </div>
@@ -239,13 +232,7 @@
 
   </div> --}}
     </div>
-    <div class="buy-now">
-      <a
-        href="#"
-        class="btn btn-danger btn-buy-now"
-        ><i class="bx bx-envelope"></i></a
-      >
-    </div>
+  
 
 <script>
 
@@ -307,7 +294,7 @@
   //   @endforeach
     
     var options = {
-          series: [44, 55, 13, 43, 22],
+          series: {{ json_encode($total) }},
           chart: {
           width: 300,
           type: 'donut',   
@@ -315,7 +302,7 @@
       donut: {
         expandOnClick: false
       },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+        labels:  {{ json_encode($tahun) }},
         responsive: [{
           breakpoint: 480,
           options: {
@@ -378,14 +365,14 @@
         var tahun  = {{ json_encode($tahun) }};
         Highcharts.chart('grafik', {
           title : {
-            text: 'Grafik Peningkatan Menara'
+            text: 'Grafik Retribusi Per Tahun'
           },
           xAxis : {
             categories : tahun
           },
           yAxis : {
             title : {
-              text : 'Jumlah Menara'
+              text : 'Jumlah Retribusi'
             }
           },
           // plotOptions : {
@@ -395,7 +382,7 @@
           // },
           series: [
             {
-              name: 'Jumlah Menara {{ $jumlah }} Dari Tahun Ini ',
+              name: 'Jumlah Retribusi',
               data: jumlah
             }
           ]

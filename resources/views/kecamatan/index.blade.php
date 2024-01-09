@@ -36,6 +36,7 @@
            <th>Nama Kecamatan</th>
            <th>Geojson</th>
            <th>Warna</th>
+            <th>Status</th>
            <th>Aksi</th>
          </tr>
        </thead>
@@ -48,6 +49,11 @@
            <td>{{ $kecamatan->nama }}</td>
            <td>{{ $kecamatan->geojson }}</td>
            <td style="color: {{ $kecamatan->warna }}">{{ $kecamatan->warna }}</td>
+           @if($kecamatan->status == '0')
+           <td><span class="badge rounded-pill bg-info">Aktif</span></td>
+           @elseif($kecamatan->status == '1')
+           <td><span class="badge rounded-pill bg-danger">Tidak Aktif</span></td>
+           @endif
            <td>
              <div class="dropdown text-center">
                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

@@ -94,6 +94,7 @@ img {
   top: 0;
   left: 0;
   width: 100%;
+  box-shadow: 1px 0 5px;
   background-color: var(--container-color);
   z-index: var(--z-fixed);
   transition: .4s;
@@ -197,6 +198,7 @@ img {
   .nav__list {
     justify-content: center;
     column-gap: 3rem;
+    padding-top: 20px;
   }
 }
 

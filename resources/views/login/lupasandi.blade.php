@@ -6,6 +6,10 @@
     <div class="authentication-wrapper authentication-basic container-p-y">
       <div class="authentication-inner py-4">
         <!-- Forgot Password -->
+
+        <div id="flash" data-flash="{{ session('status') }}"> </div>
+        <div id="flash1" data-flash="{{ session('email') }}"> </div>
+
         <div class="card">
           <div class="card-body">
             <!-- Logo -->

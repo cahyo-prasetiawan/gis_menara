@@ -18,7 +18,7 @@ class LoginController extends Controller
     public function cekLogin(Request $request)
     {
         $cek = $request->validate([
-          'email' => 'required|email:dns',
+          'email' => 'required',
         //    'email' => 'required',
             'password' => 'required|min:3'
         ]);

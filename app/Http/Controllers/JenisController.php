@@ -34,6 +34,7 @@ class JenisController extends Controller
      */
     public function store(request $request)
     {
+        
         $validatedData = $request->validate([
             'nama' => 'required|unique:jenis|max:1',
             'tarif' => 'required|max:20',
@@ -96,7 +97,7 @@ class JenisController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Jenis $jenis, $id)
+    public function destroy($id)
     {
         Jenis::destroy($id);
         return response()->json(['status' => 'Data berhasil Dihapus']);

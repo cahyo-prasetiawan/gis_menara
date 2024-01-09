@@ -86,6 +86,11 @@ Breadcrumbs::for('peta', function ($trail) {
     $trail->push('Peta Persebaran Menara', route('peta'));
 });
 
+Breadcrumbs::for('rute', function ($trail) {
+    $trail->parent('peta');
+    $trail->push('Rute Ke Menara', route('rute'));
+});
+
 Breadcrumbs::for('retribusi', function ($trail) {
     $trail->parent('dasboard');
     $trail->push('Data Retribusi', route('retribusi.index'));
@@ -95,3 +100,19 @@ Breadcrumbs::for('retribusi.create', function ($trail) {
     $trail->parent('retribusi');
     $trail->push('Tambah Data Retribusi', route('retribusi.create'));
 });
+
+Breadcrumbs::for('laporan', function ($trail) {
+    $trail->parent('dasboard');
+    $trail->push('Data Laporan Retribusi', route('laporan.index'));
+});
+
+Breadcrumbs::for('laporan.show', function ($trail) {
+    $trail->parent('laporan');
+    $trail->push('Detail Laporan Retribusi', route('laporan.show'));
+});
+
+Breadcrumbs::for('pesan', function ($trail) {
+    $trail->parent('dasboard');
+    $trail->push('Data Pesan', route('pesan.index'));
+});
+

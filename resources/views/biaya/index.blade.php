@@ -37,14 +37,24 @@
            <th>Aksi</th>
          </tr>
        </thead>
+       <?php
+       function rupiah($angka)
+   {
+       // $prefix = $prefix ? $prefix : 'Rp. ';
+       // $nominal = $this->attributes[$field];
+       // return $prefix . number_format($nominal, 0, ',', '.');
+       $hasil = "Rp. " . number_format($angka, '2', ',' , '.');
+       return $hasil;
+   }
+   ?>
        <tbody class="table-border-bottom-0">
         @if(count($biayas)>0)
            @foreach ($biayas as $biaya)
          <tr>
-          <input type="hidden" class="delete_id" value="{{ $biaya->nama }}">
+          <input type="hidden" class="delete_id" value="{{ $biaya->id }}">
            <td>{{ $loop->iteration }}</td>
            <td>{{ $biaya->nama }} Kaki</td>
-           <td>Rp. {{ $biaya->tarif }}</td>
+           <td>{{ rupiah($biaya->tarif) }}</td>
            <td>{{ $biaya->created_at->diffForHumans() }}</td>
            <td>{{ $biaya->updated_at->diffForHumans() }}</td>
           <td>
@@ -56,7 +66,7 @@
                  <a  class="dropdown-item editbtn" href="/jenis/{{ $biaya->id }}/edit"
                    ><i class="bx bx-edit-alt me-1"></i> Edit</a
                  >
-                 <form action="/jenis/{{ $biaya->nama }}" method="post" >
+                 <form action="/jenis/{{ $biaya->id }}" method="post" >
                    @method('delete')
                    @csrf
                  <button class="dropdown-item btndelete" 
@@ -92,12 +102,12 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-
+      
         $('.btndelete').click(function (e) {
             e.preventDefault();
 
             var deleteid = $(this).closest("tr").find('.delete_id').val();
-
+         
             swal({
                     title: "Apakah anda yakin?",
                     text: "Setelah dihapus, Anda tidak dapat memulihkan data ini lagi!",
@@ -114,7 +124,7 @@
                         };
                         $.ajax({
                             type: "DELETE",
-                            url: 'jenis/' + deleteid,
+                            url: '/jenis/' + deleteid,
                             data: data,
                             success: function (response) {
                                 swal(response.status, {

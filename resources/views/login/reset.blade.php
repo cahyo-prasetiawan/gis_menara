@@ -6,7 +6,7 @@
         <div class="authentication-inner">
 
            <div id="flash" data-flash="{{ session('success') }}"> </div>
-           <div id="flash1" data-flash="{{ session('LoginError') }}"> </div>
+           <div id="flash1" data-flash="{{ session('status') }}"> </div>
        
           <!-- Register -->
           <div class="card">
@@ -24,9 +24,10 @@
               <h4 class="mb-2">Reset Password! 👋</h4>
               <p class="mb-4">Silakan Masuk Ke Akun Anda Dan Mulai Menggunakan Sistem</p>
 
-              <form id="formAuthentication" class="mb-3" action="" method="POST">
-                {{ method_field('PUT') }}
+              <form id="formAuthentication" class="mb-3" action="/reset-password/{{ request('token') }}" method="POST">
+              
                 @csrf
+                <input type="hidden" value="{{ request('token') }}">
                 <div class="mb-3 form-password-toggle">
                     <div class="d-flex justify-content-between">
                       <label class="form-label" for="password">Email</label>
@@ -38,7 +39,7 @@
                         class="form-control @error('email') is-invalid @enderror"
                         name="email"
                         placeholder=""
-                        value="{{ Session::get('email') ? Session::get('email') : old('email') }}"
+                        value="{{ request('email') }}"
                       />
                       @error('email')
                       <div class="invalid-feedback">
@@ -49,7 +50,7 @@
                   </div>
                 <div class="mb-3 form-password-toggle">
                   <div class="d-flex justify-content-between">
-                    <label class="form-label" for="password">New Password</label>
+                    <label class="form-label" for="password">Password Baru</label>
                   </div>
                   <div class="input-group input-group-merge">
                     <input
@@ -70,6 +71,31 @@
                     @enderror
                   </div>
                 </div>
+
+                <div class="mb-3 form-password-toggle">
+                  <div class="d-flex justify-content-between">
+                    <label class="form-label" for="password">Konfirmasi Password</label>
+                  </div>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="password_confirmation"
+                      class="form-control @error('password_confirmation') is-invalid @enderror"
+                      name="password_confirmation"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="password_confirmation"
+                      @if(Cookie::has('pass')) value="{{ Cookie::get('pass') }}"
+                      @endif
+                    />
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                    @error('password_confirmation')
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                    @enderror
+                  </div>
+                </div>
+                
                 <div class="mb-3">
                   <button class="btn btn-primary d-grid w-100" type="submit">Reset Password</button>
                 </div>

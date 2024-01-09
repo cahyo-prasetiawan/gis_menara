@@ -85,7 +85,8 @@ class KecamatanController extends Controller
         $rules =[
             'nama' => 'required|max:255',
             'geojson' => 'file|max:40048',
-            'warna' => 'required'
+            'warna' => 'required',
+            'status' => 'required'
         ];
 
         if($request->nama != Kecamatan::findOrFail($id)->nama)

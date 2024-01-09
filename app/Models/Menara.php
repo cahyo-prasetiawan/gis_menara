@@ -31,6 +31,8 @@ class Menara extends Model
         return $this->belongsTo(Jenis::class);
     }
 
+    
+
     public function scopeFilter($query, array $filters)
     { 
         //code untuk pencarian

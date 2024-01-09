@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 
+
 class ResetPassword extends Controller
 {
     /**
@@ -63,22 +64,26 @@ class ResetPassword extends Controller
      */
     public function edit(Request $request, User $user)
     {
-        return view('login.reset', data:['request' => $request]);
+       $email = request('email');
+
+        return view('login.reset',[
+            'email' => $email
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(request $request)
     {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:5',
         ]);
      
         $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            $request->only('email', 'password','password_confirmation', 'token'),
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password)

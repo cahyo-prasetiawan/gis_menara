@@ -77,7 +77,7 @@
                             <div class="form-text">Hanya Format JPG, GIF Atau PNG. Kapasistas Maksimal 800Kb</div>
                           </div>
                         
-                          <button type="submit" class="btn btn-primary">Send</button>
+                          <button type="submit" class="btn btn-primary">Simpan</button>
                         </form>
                       </div>
                     </div>
